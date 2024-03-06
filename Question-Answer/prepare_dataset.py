@@ -1,7 +1,53 @@
 # Contains Function to Preprocess Dataset  
 from functools import partial
 from transformers import AutoTokenizer
+from datasets import DatasetDict
 from helper import format_and_concatenate_prompt, preprocess_batch
+
+def split_dataset(dataset):
+    # Define the sizes of train, validation, and test sets (as percentages)
+    train_percentage = 0.8
+    validation_percentage = 0.1
+    test_percentage = 0.1
+
+    # Calculate the number of samples for each set
+    num_samples = len(dataset['train'])
+    num_train_samples = int(num_samples * train_percentage)
+    num_validation_samples = int(num_samples * validation_percentage)
+    num_test_samples = num_samples - num_train_samples - num_validation_samples
+
+    # Create empty lists to store indices of train, validation, and test samples
+    train_indices = []
+    validation_indices = []
+    test_indices = []
+
+    # Assign indices to train, validation, and test sets
+    indices = list(range(num_samples))
+    for i in range(num_train_samples):
+        index = indices.pop(0)
+        train_indices.append(index)
+
+    for i in range(num_validation_samples):
+        index = indices.pop(0)
+        validation_indices.append(index)
+
+    for i in range(num_test_samples):
+        index = indices.pop(0)
+        test_indices.append(index)
+
+    # Create new dataset objects for train, validation, and test sets
+    train_dataset = dataset['train'].select(train_indices)
+    validation_dataset = dataset['train'].select(validation_indices)
+    test_dataset = dataset['train'].select(test_indices)
+
+    # Create a new dataset object using the DatasetDict class
+    dataset = DatasetDict({
+        'train': train_dataset,
+        'validation': validation_dataset,
+        'test': test_dataset
+    })
+
+    return dataset
 
 # SOURCE: https://github.com/databrickslabs/dolly/blob/master/training/trainer.py
 def preprocess_dataset(tokenizer: AutoTokenizer, max_token_length: int, shuffle_seed, dataset):

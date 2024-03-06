@@ -13,7 +13,7 @@ import accelerate
 from huggingface_hub import interpreter_login
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from helper import print_number_of_trainable_model_parameters,generate_and_print_answer_using_base_model,get_max_length
-from prepare_dataset import preprocess_dataset
+from prepare_dataset import preprocess_dataset, split_dataset
 
 #Log in to Hugging Face using API token
 hf_token = os.getenv("HF_TOKEN")
@@ -26,6 +26,8 @@ dataset = load_dataset(huggingface_dataset_name, cache_dir='./cache')
 # Print dataset information and first example
 print(dataset)
 print(dataset["train"][0])
+
+dataset = split_dataset(dataset=dataset)
 
 # Create BitsAndBytes Configuration
 compute_dtype = getattr(torch, "float16")
