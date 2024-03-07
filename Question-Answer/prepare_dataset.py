@@ -11,7 +11,7 @@ def split_dataset(dataset):
     test_percentage = 0.1
 
     # Calculate the number of samples for each set
-    num_samples = len(dataset['train'])
+    num_samples = 20000
     num_train_samples = int(num_samples * train_percentage)
     num_validation_samples = int(num_samples * validation_percentage)
     num_test_samples = num_samples - num_train_samples - num_validation_samples

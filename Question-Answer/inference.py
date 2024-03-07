@@ -2,6 +2,7 @@ import os
 import torch
 from datasets import load_dataset
 from peft import PeftModel
+from prepare_dataset import split_dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from helper import generate_and_print_answer_using_peft
 
@@ -12,6 +13,7 @@ os.environ["HUGGING_FACE_HUB_TOKEN"] = hf_token
 # Load the Dataset
 huggingface_dataset_name = "microsoft/orca-math-word-problems-200k"
 dataset = load_dataset(huggingface_dataset_name)
+dataset = split_dataset(dataset=dataset)
 
 # Create BitsAndBytes Configuration
 compute_dtype = getattr(torch, "float16")
